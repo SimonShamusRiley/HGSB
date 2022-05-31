@@ -1,0 +1,66 @@
+---
+title: "The Hitchiker's Guide to Statistics in Biology"
+output: 
+  rmarkdown::html_vignette:
+    toc: TRUE
+    toc_depth: 2
+    df_print:  kable
+    css: custom_vignette.css
+vignette: >
+  %\VignetteIndexEntry{01 Preface to the HGSB Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r top, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = ">"
+)
+```
+
+# About These Vignettes
+
+*The Hitchiker's Guide to Statistics in Biology* aims to equip graduate students with an understanding of modern applied statistical methods required for their day to day work, as well as to provide them a basis for more advanced study. While the first two editions of the book provided worked examples coded only in SAS, it was decided beginning with the third edition that the worked examples should be expanded to included versions coded in R and JMP in order to serve those wishing to learn, or already more familiar with, these other software packages. Code snippets alone are not enough, however, if the goal is to get learners beyond a copy-paste, cookbook approach to statistical analysis; for any given statistical software platform, a considerable volume of supplementary information is required for researchers to make informed, justifiable modeling decisions, to properly interpret their results, and to troubleshoot common errors and warnings. Given the many and varied differences between SAS, JMP, and R, it was thus decided that the R code would be made available separately via these tutorials and the `HGSB` R package. 
+
+These tutorials are thus specifically designed to give R users all the information they need in order to undertake the analyses described in the text on their own data. However, a basic familiarity with syntax of the R language and the use of the R and RStudio (or similar IDE) programs is assumed. If you have never used R before, if you don't have (or don't know whether you have) both R and RStudio installed on your computer, or just think you might need a refresher, you are strongly advised to start with one of the many resources available for those new to R, such as the [Data Analysis and Visualization in R for Ecologists](https://datacarpentry.org/R-ecology-lesson/index.html) tutorial or the [Hands-On Programming with R](https://rstudio-education.github.io/hopr/basics.html) book by Garrett Grolemund. 
+
+# About the `HGSB` Package, and Others Required for the Tutorials
+
+An R package has been assembled which contains all of the data sets used in these tutorials, as well as a number of functions required to run them. Before continuing, make sure to download and install it by running the following code:
+
+```{r install, eval = F}
+devtools::install_github('')
+```
+
+In addition, the tutorials will make use of functions contained in a number of other packages which should also be installed, if they are not already, before proceeding:
+
+```{r otherpackages, eval=F}
+required_packages <- c('nlme', 'lme4', 'emmeans')
+install.packages(required_packages)
+```
+
+Nearly all of the functions in the `HGSB` package itself were in fact adapted - if not copied directly - from others: [`ThresholdROC`](https://doi.org/10.18637/jss.v082.i04), [`DescTools`](https://cran.r-project.org/package=DescTools). This was done in an attempt to strike a balance between ensuring the code in these tutorials would remain stable and reproducible for as long as possible (i.e. minimizing the number of dependencies which, if and when they are updated, could break the code) while keeping the tutorials reasonably straightforward and transparent for most readers (i.e. not wishing to replace every convenience function with dense blocks of base R code). Complete citation details are included in the respective help files for each of the individual functions (e.g. run: `help("diagnostic_summary")`), and in all cases such use was in accordance with the package's published license. 
+
+# A Note on Conventions
+
+Throughout the text of the tutorials, code is indicated by monospaced typewriter font either alone or in conjunction with specific characters or other formatting options. Specifically, R packages, functions, and function arguments will be indicated by: `package`, `function()`, and `argument = `, respectively, while SAS or other non-R code will be indicated in capital letters: `PROC SAS`. A **data** set will be indicated in bold. 
+
+The code in these tutorials was written for use with R versions $\ge$4.0.0. The following code will tell you which version you currently have installed:
+
+```{r rver}
+print(R.version)
+```
+
+If you are using an older version of R, it is advised that you download and install the latest version from [CRAN](https://www.r-project.org/). This may require reinstalling many R packages. 
+
+
+# Table of Contents
+
+
+
+
+
+
+
+

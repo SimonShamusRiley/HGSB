@@ -1,0 +1,23 @@
+---
+title: "Mixed Modeling in R: A Primer"
+output:
+  rmarkdown::html_vignette:
+    css: "custom_vignette.css"
+vignette: >
+  %\VignetteIndexEntry{02 Mixed Modeling in R: A Primer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = ">",
+  warning = F,
+  message = F
+)
+```
+
+Sorry `r noquote('\u2639')` but this vignette is still in a work in progress!

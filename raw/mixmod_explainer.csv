@@ -1,0 +1,12 @@
+Package,Function,Random,Rside,Gside,HetVar,Family,NonLin
+`stats`,`lm`,,,,,,
+`stats`,`aov`,`+`^1^,,,,,
+`stats`,`glm`,,,,,`+`,
+`stats`,`nls`,,,,,,X
+`nlme`,`gls`,,`+`,,`+`,,
+`nlme`,`lme`,X^2^,`+`,`+`,`+`,,
+`nlme`,`nlme`,X^2^,`+`,`+`,`+`,,X
+`lme4`,`lmer`,X,,,,,
+`lme4`,`glmer`,X,,,,`+`,
+`MASS`,`glmmPQL`,X^2^,`+`,`+`,,`+`,
+`glmmTMB`,`glmmTMB`,X,`+`^3^,`+`^3^,`+`^4^,`+`,

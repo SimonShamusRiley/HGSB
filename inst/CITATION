@@ -1,0 +1,14 @@
+citHeader("To cite HGSB in publications use:")
+
+citEntry(
+  entry    = "Book",
+  title    = "A Hitchiker's Guide to Statistics in Biology",
+  author   = "Stephen R. Bowley, Edzard van Santen, Simon S. Riley, Ruth Hummel",
+  year     = "2022",
+  publisher= "Wiley & Sons",
+  pages    = "[pagecount]",
+  url      = "[DOI]"",
+  textVersion = paste(
+
+  )
+)

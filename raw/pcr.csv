@@ -1,0 +1,5 @@
+gstandard,test,count
+present,positive,302
+present,negative,21
+absent,positive,14
+absent,negative,91

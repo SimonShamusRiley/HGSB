@@ -1,0 +1,50 @@
+Package: HGSB
+Title: "A Hitchiker's Guide to Statistics in Biology" Companion Package
+Version: 0.0.1-20220531
+Authors@R: 
+    person(given = "Simon",
+           family = "Riley",
+           role = c("aut", "cre"),
+           email = "ssriley@protonmail.com",
+           comment = c(ORCID = "0000-0002-4833-2026"))
+Description: This is the companion package for "A Hitchiker's Guide to Statistics in Biology" (2022) by Stephen R. Bowley, Edzard van Santen, Simon S. Riley and Ruth Hummel
+License: CC BY 4.0
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    ade4,
+    agricolae,
+    car,
+    desplot,
+    dgof,
+    emmeans,
+    ggResidpanel,
+    glmmTMB,
+    lattice,
+    lme4,
+    MASS,
+    Matrix,
+    mgcv,
+    metafor,
+    multcomp,
+    multcompView,
+    MuMIn,
+    nortest, 
+    nlme,
+    nnet,
+    pls,
+    psych,
+    rgl,
+    rmarkdown,
+    scatterplot3d,
+    segmented,
+    tidyr,
+    vcd,
+Depends: 
+    R (>= 2.10)
+Suggests: 
+    knitr,
+VignetteBuilder:
+    knitr
