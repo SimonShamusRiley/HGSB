@@ -1,7 +1,3 @@
-##### Required Packages (All Chapters) ####
-pkgs <- c('ThresholdROC', 'rcompanion', 'agricolae', 'dgof', 'psych')
-sapply(pkgs, usethis::use_package)
-
 ##### Chapter 1 ####
 # Install required packages
 pcr <- array(c(302, 21, 14, 91), dim = c(2, 2),
