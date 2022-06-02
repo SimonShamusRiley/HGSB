@@ -33,8 +33,10 @@ devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE,
 ```
 
 If asked whether "you want to install from sources the packages which need compilation?", 
-select "No" ^[Needing compilation means that the source contains C and/or fortran code. If you have compilers such as [RTools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, you are free to select "Yes"]. If informed that "These packages have more recent versions available. 
+select "No" [^1]. If informed that "These packages have more recent versions available. 
 It is recommended to update all of them. Which would you like to update?", 
+
+[^1]: Needing compilation means that the source contains C and/or fortran code. If you have compilers such as [RTools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, you are free to select "Yes".
 
 For a **minimal installation**, which omits many packages used in the example analysis (and thus which will require installation later), simply omit the `dependencies = TRUE` argument (*do not* set dependencies to `FALSE`):
 
