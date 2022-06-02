@@ -28,7 +28,8 @@ install.package("devtools")
 For a **complete installation**, which includes all of the packages used in the text's example analyses, run the following code (note that this may take ten minutes or more, depending on how many of the dependencies are already installed on your machine):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
+devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, 
+                         INSTALL_opts = c("--no-multiarch"))
 ```
 
 If asked whether "you want to install from sources the packages which need compilation?", 
@@ -48,11 +49,8 @@ First, the following code needs to be entered in the terminal in order to add th
 ```
 # Add CRAN Repository
 sudo apt update -qq
-
 sudo apt install --no-install-recommends software-properties-common dirmngr
-
 wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
-
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
 
 # Install R
