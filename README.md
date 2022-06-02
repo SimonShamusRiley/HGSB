@@ -18,7 +18,7 @@ If need be, navigate to [https://cran.r-project.org/](https://cran.r-project.org
 The following lines of code will install the latest version of the `HGSB` package, along with all of its dependencies, which includes all of the packages used in the book's example analyses (this may take 10 minutes or more to complete, depending on how many of those dependencies are already installed on your machine):
 
 `install.package("devtools")`
-`devtools::install_github(repo = "SimonShamusRiley/HGSB", INSTALL_opts=c("--no-multiarch"))`
+`devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))`
 
 If asked whether "you want to install from sources the packages which need compilation?", 
 select "No". If informed "These packages have more recent versions available. 
@@ -26,6 +26,18 @@ It is recommended to update all of them. Which would you like to update?", type 
 console and hit enter - this will update only those packages which have newer versions 
 available on CRAN.
 
+If you do not wish to download all the dependencies at once, either because it is causing errors or because you wish to do so on an as-needed basis, simply run the code above with `dependencies = FALSE`.
+
 **Linux**
 
-Testing (with Ubuntu desktop 18.04) is still underway, but it may be advisable to carefully follow the instructions provided by CRAN for installing on [Ubuntu](https://cran.r-project/bin/linux/ubuntu), [Debian](https://cran.r-project/bin/linux/debian), [Fedora/Redhat](https://cran.r-project/bin/linux/fedora)
+The code to install `devtools` and then `HGSB` in R is of course identical in all three operating systems. However, two steps are needed first when operating in linux: first, make sure to install the developer version of R, which comes bundled with most of the tools needed for R to compile and install packages. In the terminal run:
+
+`sudo apt-get install r-base-dev`
+
+Additionally, the following will also be needed to install the `devtools` package, among others:
+
+`sudo apt-get install build-essential cmake libcurl4-gnutls-dev libxml2-dev libssl-dev`
+
+If the package still fails to install due to failure to install dependencies, try setting `dependencies = FALSE` when installing the `HGSB` package (see the section on installing in Windows/Mac, above).
+
+
