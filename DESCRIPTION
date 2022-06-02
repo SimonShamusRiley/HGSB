@@ -7,33 +7,38 @@ Authors@R:
            role = c("aut", "cre"),
            email = "ssriley@protonmail.com",
            comment = c(ORCID = "0000-0002-4833-2026"))
-Description: This is the companion package for "A Hitchiker's Guide to Statistics in Biology" (2022) by Stephen R. Bowley, Edzard van Santen, Simon S. Riley and Ruth Hummel
+Description: This is the companion package for "A Hitchiker's Guide to Statistics in Biology" (2022) by Stephen R. Bowley, Edzard van Santen, Simon S. Riley, and Ruth Hummel
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
+    car,
+    emmeans,
+    glmmTMB,
+    lme4,
+    Matrix,
+    mgcv,
+    nlme,
+Depends: 
+    R (>= 3.10)
+Suggests: 
     ade4,
     agricolae,
-    car,
     desplot,
     dgof,
-    emmeans,
     ggplot2,
     ggResidpanel,
     glmmTMB,
+    knitr,
     lattice,
-    lme4,
     MASS,
-    Matrix,
-    mgcv,
     metafor,
     multcomp,
     multcompView,
     MuMIn,
     nortest, 
-    nlme,
     nnet,
     pls,
     psych,
@@ -44,9 +49,5 @@ Imports:
     tibble,
     tidyr,
     vcd,
-Depends: 
-    R (>= 2.10)
-Suggests: 
-    knitr,
 VignetteBuilder:
     knitr
