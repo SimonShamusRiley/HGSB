@@ -34,7 +34,7 @@ devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE,
 
 If asked whether "you want to install from sources the packages which need compilation?", 
 select "No" [^1]. If informed that "These packages have more recent versions available. 
-It is recommended to update all of them. Which would you like to update?", 
+It is recommended to update all of them. Which would you like to update?", type "1" and press enter to update all packages.
 
 [^1]: Needing compilation means that the source contains C and/or fortran code. If you have compilers such as [RTools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, you are free to select "Yes".
 
