@@ -21,8 +21,9 @@ Imports:
     Matrix,
     mgcv,
     nlme,
+    tibble,
 Depends: 
-    R (>= 3.10)
+    R (>= 3.0.0)
 Suggests: 
     ade4,
     agricolae,
