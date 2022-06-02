@@ -3,3 +3,5 @@
 ^doc$
 ^Meta$
 ^LICENSE\.md$
+^_vestigia\.R$
+^_create_datasets\.R$
