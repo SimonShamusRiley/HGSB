@@ -17,7 +17,7 @@ using both:
 Vettraino, A.M., Sukno, S., Vannini, A., & Garbelotto, M. (2010). Diagnostic
 sensitivity and specificity of different methods used by two laboratories for the
 detection of Phytophthora ramorum on multiple natural hosts. Plant Pathology, 59,
-289-300. DOI: \url{https://doi.org/10.1111/j.1365-3059.2009.02209.x}
+289-300. DOI: \href{https://doi.org/10.1111/j.1365-3059.2009.02209.x}{10.1111/j.1365-3059.2009.02209.x}
 }
 \usage{
 pcr
