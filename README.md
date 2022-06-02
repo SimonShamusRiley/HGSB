@@ -1,4 +1,4 @@
-# HGSB: The Companion Package to *A Hitchiker's Guide to Statistics in Biology*
+# HGSB: The Companion Package to *A Hitchhiker's Guide to Statistics in Biology*
 ### By Stephen R. Bowley, Edzard van Santen, Simon Riley & Ruth Hummel
 
 To be published later this year by Wiley and the ASA-CSA-SSSA. Stay tuned for updates!
@@ -18,6 +18,7 @@ If need be, navigate to [https://cran.r-project.org/](https://cran.r-project.org
 The following lines of code will install the latest version of the `HGSB` package, along with all of its dependencies, which includes all of the packages used in the book's example analyses (this may take 10 minutes or more to complete, depending on how many of those dependencies are already installed on your machine):
 
 `install.package("devtools")`
+
 `devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, INSTALL_opts=c("--no-multiarch"))`
 
 If asked whether "you want to install from sources the packages which need compilation?", 
