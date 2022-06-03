@@ -22,14 +22,13 @@ If need be, navigate to [https://cran.r-project.org/](https://cran.r-project.org
 The `devtools` package is required to install the `HGSB` package from github. To install `devtools`, run the following the code in R:
 
 ```
-install.package("devtools")
+install.packages("devtools")
 ```
 
 For a **complete installation**, which includes all of the packages used in the text's example analyses, run the following code (note that this may take ten minutes or more, depending on how many of the dependencies are already installed on your machine):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, 
-                         INSTALL_opts = c("--no-multiarch"))
+devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
 ```
 
 If asked whether "you want to install from sources the packages which need compilation?", 
@@ -41,7 +40,7 @@ It is recommended to update all of them. Which would you like to update?", type 
 For a **minimal installation**, which omits many packages used in the example analysis (and thus which will require installation later), simply omit the `dependencies = TRUE` argument (*do not* set dependencies to `FALSE`):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB",                                                                           INSTALL_opts = c("--no-multiarch"))
+devtools::install_github(repo = "SimonShamusRiley/HGSB", INSTALL_opts = c("--no-multiarch"))
 ```
 
 ## Ubuntu
@@ -65,7 +64,7 @@ sudo apt-get install cmake libcurl4-gnutls-dev libxml2-dev libssl-dev
 Next, the R package `devtools` should be installed by running the following in the R console:
 
 ```
-install.package('devtools')
+install.packages('devtools')
 ```
 
 For a **complete installation**, which includes all of the packages used in the text's example analyses, run the following code (note that this may take a considerable amount of time, depending on how many of the dependencies are already installed on your machine):
