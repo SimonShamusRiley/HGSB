@@ -495,6 +495,5 @@ eblup_terms <- function(object){
   terms <- c(fixef(object), unlist(ranef(object)))
   terms <- terms[terms != 0]
   terms <- names(terms)
-  terms <- names(c(fixef(object), unlist(ranef(object))))
   matrix(terms, ncol = 1, dimnames = list(Index = 1:length(terms), 'Coefficient'))
 }
