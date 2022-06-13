@@ -232,7 +232,7 @@ usethis::use_data(grape_among, overwrite = T)
 
 grin <- read.csv('raw/grin.csv')
 grin[, 1:2] <- lapply(grin[, 1:2], factor)
-usethis::use_data(grin)
+usethis::use_data(grin, overwrite = T)
 
 #### Chapter 15 #####
 silage <- read.csv('raw/silage.csv')
@@ -241,3 +241,4 @@ usethis::use_data(silage, overwrite = T)
 
 #### Other ####
 fitness <- read.csv('raw/fitness.csv')
+usethis::use_data(fitness, overwrite = T)
