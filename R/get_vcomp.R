@@ -280,13 +280,17 @@ eblup <- function(object, predictions, df = NULL){
   if (is.null(names(predictions))){
     names(predictions) = paste0('Linear Function ', 1:length(predictions), ':')
   }
-
+  options(contrasts = c('contr.sum', 'contr.poly'))
+  object = update(object)
   # Calculation of standard errors and CI for eblups requires X, Z, G and R matrices
   vcomp <- get_vcomp(object)
   X <- vcomp$X
   G <- vcomp$G
   R <- vcomp$R
   Z <- vcomp$Z
+  drop_empty <- colSums(Z) > 0
+  Z <- Z[ , drop_empty]
+  G <- G[drop_empty, drop_empty]
 
   # From Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018)
   M1 <- t(X) %*% solve(R) %*% X
@@ -307,7 +311,7 @@ eblup <- function(object, predictions, df = NULL){
 
   # Calculate predictions
   fe_id <- seq(length(fixef(object)))
-  B <- matrix(c(fixef(object), unlist(ranef(object))))
+  B <- matrix(c(fixef(object), unlist(ranef(object)))[drop_empty])
   preds <- sapply(L, `%*%`, B)
 
   # Rank of prediction matrices determines t- vs. F-test (with "v" den degree freedom)
@@ -488,6 +492,9 @@ eblup_terms <- function(object){
   if (!inherits(object, 'lme') & !inherits(object, 'merMod')){
     stop(simpleError('Object must be of class "lme" or "merMod'))
   }
+  terms <- c(fixef(object), unlist(ranef(object)))
+  terms <- terms[terms != 0]
+  terms <- names(terms)
   terms <- names(c(fixef(object), unlist(ranef(object))))
   matrix(terms, ncol = 1, dimnames = list(Index = 1:length(terms), 'Coefficient'))
 }
