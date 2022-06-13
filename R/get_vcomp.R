@@ -112,7 +112,7 @@ get_vcomp.lme = function (x, data = NULL) {
   n.levels <- length(x$groups)
   Z <- matrix(0, n, 0)
   if (start.level <= n.levels) {
-    for (i in (n.levels - start.level + 1):1) {
+    for (i in 1:(n.levels - start.level + 1)) {
       if (length(levels(refit$groups[[n.levels - i + 1]])) ==
           1) {
         X[[1]] <- matrix(rep(1, nrow(refit$groups)))
@@ -129,7 +129,7 @@ get_vcomp.lme = function (x, data = NULL) {
     }
     Vr <- matrix(0, ncol(Z), ncol(Z))
     start <- 1
-    for (i in (n.levels - start.level + 1):1) {
+    for (i in 1:(n.levels - start.level + 1)) {
       k <- n.levels - i + 1
       for (j in 1:x$dims$ngrps[i]) {
         stop <- start + ncol(cov[[k]]) - 1
@@ -139,6 +139,7 @@ get_vcomp.lme = function (x, data = NULL) {
     }
     Vr <- Vr * x$sigma^2
   }
+
   list(X = model.matrix(formula(x), data), G = Vr, R = R, Z = Z, V = Z %*% Vr %*% t(Z) + R)
 }
 
