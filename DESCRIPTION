@@ -1,6 +1,6 @@
 Package: HGSB
 Title: "A Hitchiker's Guide to Statistics in Biology" Companion Package
-Version: 0.0.1-20220531
+Version: 0.1.0
 Authors@R: 
     person(given = "Simon",
            family = "Riley",
@@ -47,8 +47,8 @@ Suggests:
     rmarkdown,
     scatterplot3d,
     segmented,
-    tibble,
     tidyr,
     vcd,
+    vegan,
 VignetteBuilder:
     knitr
