@@ -2,13 +2,13 @@
 % Please edit documentation in R/get_vcomp.R
 \name{get_vcomp}
 \alias{get_vcomp}
-\title{Extract the \strong{X}, \strong{Z}, \strong{G}, \strong{R} and \strong{V}
+\title{Extract the \strong{Z}, \strong{G}, \strong{R} and \strong{V}
 matrices from a fitted model}
 \usage{
 get_vcomp(x, ...)
 }
 \arguments{
-\item{x}{A fitted model of class \code{\link[nlme]{lme}} or \code{\link[lme4]{merMod}}.}
+\item{x}{A fitted model. Currently, models of the following class are supported: "lme", "merMod".}
 
 \item{data}{The data frame to be used in constructing the design matrix. Uses the data stored in the
 model object if not supplied. See details for more information.}
@@ -17,16 +17,15 @@ model object if not supplied. See details for more information.}
 A list of matrices.
 }
 \description{
-The method defined for \code{\link[nlme]{lme}} objects is nearly identical
-to the \code{\link[mgcv]{extract.lme.cov}} function from which this function was
-adapted, except that it returns both the marginal variance-covariance matrix and the
-intermediate outputs used to calculate it, along with the design matrix, rather than
-only the marginal variance-covariance matrix itself. For \code{merMod} objects (fit
-with \code{\link[lme4]{lmer}}), the \code{\link[lme4]{getME}} function is used
-repeatedly to extract/construct the same matrices.
+The marginal variance-covariance matrix \strong{V} for fitted model
+mixed effects model is equal to:
+V = ZGZ' + R
+Where G is the random effects variance-covariance matrix, R is residual variance-covariance
+matrix and Z is the random effects design matrix. These matrices are useful for calculating,
+for example, EBLUPs and their standard errors.
 }
 \details{
-This function returns the design matrix, \strong{X}, the incidence matrix,
+This function returns the incidence matrix,
 \strong{Z}, the random effects covariance
 matrix, \strong{G}, the residual covariance matrix, \strong{R}, and the marginal covariance matrix, \strong{V}. These
 matrices are useful for calculating the covariance matrix of the fixed and
@@ -34,14 +33,9 @@ random effects "estimates" together, which is needed for the calculation
 of the square root of the estimated projection variance for EBLUPs. The
 marginal variance covariance matrix \strong{V} is also returned.
 
-When the "na action" of e.g. lme removes some rows from the data set during the model
-fitting process, it may be required to supply the abridged data set manually using
-the \code{data} argument. If a different data set than the one used to fit the model
-using \code{nlme::lme} is supplied to the \code{data} argument, the model is refit to
-the new data set while attempting to hold constant the random effects, correlation
-and variance estimates of the original model before extracting the \strong{G},
-\strong{V}, etc. matrices. This functionality remains in development and should not be
-employed.
+For models of class "lme", the code employed is adapted from the mcgv::extract.lme.cov() function
+of Wood (2021), with the most significant modification being adjustments which correct
+the G and Z matrices when crossed random effects are specified.
 }
 \references{
 Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018).

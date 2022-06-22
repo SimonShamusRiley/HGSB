@@ -14,8 +14,7 @@ eblup_terms(object)
 A column vector of the names of fixed- and random-effects coefficients in \code{object}.
 }
 \description{
-This is a convenience function to aid in the specification of estimable linear
-functions where the number of fixed and/or random effects in the model is large.
+...Guidelines on specifying predictions and explaining wierd df behavior go here...
 }
 \examples{
 library(HGSB)

@@ -1,19 +1,67 @@
-#' @title Extract the \strong{X}, \strong{Z}, \strong{G}, \strong{R} and \strong{V}
+model.matrix.reStruct <- function (object, data, contrast = NULL, ...){
+  if (is.null(form <- formula(object, asList = TRUE))) {
+    stop("cannot extract model matrix without formula")
+  }
+  form1 <- asOneFormula(form)
+  if (length(form1) > 0) {
+    data <- model.frame(form1, data = data)
+  } else {
+    data <- data.frame(`(Intercept)` = rep(1, nrow(data)))
+  }
+  idents <- sapply(object, function(x) {'pdIdent' %in% class(x)})
+  for (i in which(idents)){
+    form[[i]] = ~1
+  }
+  any2list <- function(object, data, contrast) {
+    form2list <- function(form, data, contrast) {
+      if (length(asOneFormula(form)) == 0) {
+        return(list(`(Intercept)` = rep(1, dim(data)[1])))
+      }
+      as.data.frame(unclass(model.matrix(form, model.frame(form,
+                                                           data), contrast)))
+    }
+    if (inherits(object, "formula")) {
+      return(form2list(object, data, contrast))
+    }
+    if (is.list(object)) {
+      return(unlist(lapply(object, form2list, data = data,
+                           contrast = contrast), recursive = FALSE))
+    }
+    return(NULL)
+  }
+  value <- as.list(lapply(form, any2list, data = data, contrast = contrast))
+  contr <- as.list(lapply(as.data.frame(data), function(x) if (inherits(x,
+                                                                        "factor") && length(levels(x)) > 1)
+    contrasts(x)
+    else NULL))
+  contr[names(contrast)] <- contrast
+  ncols <- lengths(value)
+  nams <- if (length(value) == 1) {
+    names(value[[1]])
+  }
+  else {
+    paste(rep(names(value), ncols), unlist(lapply(value,
+                                                  names)), sep = ".")
+  }
+  structure(matrix(unlist(value), nrow = nrow(data), dimnames = list(row.names(data),
+                                                                     nams)), ncols = ncols, nams = lapply(value, names), contr = contr)
+}
+
+#' @title Extract the \strong{Z}, \strong{G}, \strong{R} and \strong{V}
 #' matrices from a fitted model
 #'
-#' @description The method defined for \code{\link[nlme]{lme}} objects is nearly identical
-#'   to the \code{\link[mgcv]{extract.lme.cov}} function from which this function was
-#'   adapted, except that it returns both the marginal variance-covariance matrix and the
-#'   intermediate outputs used to calculate it, along with the design matrix, rather than
-#'   only the marginal variance-covariance matrix itself. For \code{merMod} objects (fit
-#'   with \code{\link[lme4]{lmer}}), the \code{\link[lme4]{getME}} function is used
-#'   repeatedly to extract/construct the same matrices.
+#' @description The marginal variance-covariance matrix \strong{V} for fitted model
+#'  mixed effects model is equal to:
+#'  V = ZGZ' + R
+#'  Where G is the random effects variance-covariance matrix, R is residual variance-covariance
+#'  matrix and Z is the random effects design matrix. These matrices are useful for calculating,
+#'  for example, EBLUPs and their standard errors.
 #'
-#' @param x A fitted model of class \code{\link[nlme]{lme}} or \code{\link[lme4]{merMod}}.
+#' @param x A fitted model. Currently, models of the following class are supported: "lme", "merMod".
 #' @param data 	The data frame to be used in constructing the design matrix. Uses the data stored in the
 #'   model object if not supplied. See details for more information.
 #'
-#' @details This function returns the design matrix, \strong{X}, the incidence matrix,
+#' @details This function returns the incidence matrix,
 #'   \strong{Z}, the random effects covariance
 #'   matrix, \strong{G}, the residual covariance matrix, \strong{R}, and the marginal covariance matrix, \strong{V}. These
 #'   matrices are useful for calculating the covariance matrix of the fixed and
@@ -21,14 +69,9 @@
 #'   of the square root of the estimated projection variance for EBLUPs. The
 #'   marginal variance covariance matrix \strong{V} is also returned.
 #'
-#'   When the "na action" of e.g. lme removes some rows from the data set during the model
-#'   fitting process, it may be required to supply the abridged data set manually using
-#'   the \code{data} argument. If a different data set than the one used to fit the model
-#'   using \code{nlme::lme} is supplied to the \code{data} argument, the model is refit to
-#'   the new data set while attempting to hold constant the random effects, correlation
-#'   and variance estimates of the original model before extracting the \strong{G},
-#'   \strong{V}, etc. matrices. This functionality remains in development and should not be
-#'   employed.
+#'   For models of class "lme", the code employed is adapted from the mcgv::extract.lme.cov() function
+#'   of Wood (2021), with the most significant modification being adjustments which correct
+#'   the G and Z matrices when crossed random effects are specified.
 #'
 #' @return A list of matrices.
 #'
@@ -44,9 +87,9 @@ get_vcomp = function(x, ...){
 }
 
 #' @exportS3Method
-get_vcomp.lme = function (x, data = NULL) {
-  start.level = 1
-
+get_vcomp.lme <- function(x, data = NULL){
+  if (!inherits(x, "lme"))
+    stop("object does not appear to be of class lme")
   if (is.null(data)) {
     na.act <- na.action(x)
     data <- if (is.null(na.act))
@@ -54,18 +97,45 @@ get_vcomp.lme = function (x, data = NULL) {
     else x$data[-na.act, ]
   }
 
-  refit <- update(x, data = data)
-  grps <- nlme::getGroups(refit)
-  n <- length(grps)
-  if (is.null(x$modelStruct$varStruct)) {
-    w <- rep(x$sigma, n)
-  } else {
-    same_coef_order <- all(attr(refit$modelStruct$varStruct, 'groupNames') == attr(x$modelStruct$varStruct, 'groupNames'))
-    if (!same_coef_order){
-      warning(simpleWarning('Differences in the grouping levels or their ordering in the new data set may be causing variance parameters to be misspecified; The V matrix may be incorrect'))
+  # x$groups, x$dims$ngrp and x$dims$ncol are all misspecified when crossed random
+  # effects are present; this corrects those
+  forms = formula(reStruct(x$modelStruct$reStruct))
+  nested <- names(forms)
+  nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
+  nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = '_'))
+  grps <- lapply(forms, model.frame, data = data)
+  names(grps) <- nms
+  if (any(pull <- sapply(grps, length)==0)){
+    pull <- names(grps)[pull]
+    for (c in pull){
+      grps[[c]] <- data[, c, drop = F]
     }
-    coef(refit$modelStruct$varStruct) <- coef(x$modelStruct$varStruct)
-    w <- 1/nlme::varWeights(refit$modelStruct$varStruct)
+  }
+  grps <- as.data.frame(grps)
+  grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps)], as.character)
+
+  for (n in 1:ncol(grps)){
+    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
+  }
+  grps <- grps[, ncol(grps):1]
+
+  x$groups <- grps
+
+  idents <- sapply(x$modelStruct$reStruct, function(x) {'pdIdent' %in% class(x)})
+  x$dims$ngrps <- sapply(x$groups[, ncol(x$groups):1], nlevels)
+  x$dims$ncol[which(idents)] <- 1
+
+  for (w in which(idents)){
+    attr(x$modelStruct$reStruct[[w]], 'ncol') = 1
+    attr(x$modelStruct$reStruct[[w]], 'Dimnames') = list("(Intercept)", "(Intercept)")
+  }
+
+  grps <- nlme::getGroups(x)
+  n <- length(grps)
+  if (is.null(x$modelStruct$varStruct))
+    w <- rep(x$sigma, n)
+  else {
+    w <- 1/nlme::varWeights(x$modelStruct$varStruct)
     group.name <- names(x$groups)
     order.txt <- paste("ind<-order(data[[\"", group.name[1],
                        "\"]]", sep = "")
@@ -78,11 +148,10 @@ get_vcomp.lme = function (x, data = NULL) {
     w[ind] <- w
     w <- w * x$sigma
   }
-  if (is.null(x$modelStruct$corStruct)){
+  if (is.null(x$modelStruct$corStruct))
     V <- diag(n)
-  } else {
-    coef(refit$modelStruct$corStruct) <- coef(x$modelStruct$corStruct)
-    c.m <- nlme::corMatrix(refit$modelStruct$corStruct)
+  else {
+    c.m <- nlme::corMatrix(x$modelStruct$corStruct)
     if (!is.list(c.m))
       V <- c.m
     else {
@@ -103,44 +172,44 @@ get_vcomp.lme = function (x, data = NULL) {
   }
   V <- as.vector(w) * t(as.vector(w) * V)
   R <- V
-  X <- list()
+  M <- list()
+
   grp.dims <- x$dims$ncol
-  coef(refit$modelStruct$reStruct) <- coef(x$modelStruct$reStruct)
-  Zt <- model.matrix(refit$modelStruct$reStruct, data)
-  cov <- as.matrix(refit$modelStruct$reStruct)
+  Zt <- model.matrix(x$modelStruct$reStruct, data)
+  cov <- as.matrix(x$modelStruct$reStruct)
   i.col <- 1
   n.levels <- length(x$groups)
   Z <- matrix(0, n, 0)
-  if (start.level <= n.levels) {
-    for (i in 1:(n.levels - start.level + 1)) {
-      if (length(levels(refit$groups[[n.levels - i + 1]])) ==
-          1) {
-        X[[1]] <- matrix(rep(1, nrow(refit$groups)))
-      }
-      else {
-        clist <- list(`refit$groups[[n.levels - i + 1]]` = c("contr.treatment",
-                                                             "contr.treatment"))
-        X[[1]] <- model.matrix(~refit$groups[[n.levels -
-                                                i + 1]] - 1, contrasts.arg = clist)
-      }
-      X[[2]] <- Zt[, i.col:(i.col + grp.dims[i] - 1), drop = FALSE]
-      i.col <- i.col + grp.dims[i]
-      Z <- cbind(Z, mgcv::tensor.prod.model.matrix(X))
+  for (i in n.levels:1) {
+    if (length(levels(x$groups[[n.levels - i + 1]])) ==
+        1) {
+      M[[1]] <- matrix(rep(1, nrow(x$groups)))
     }
-    Vr <- matrix(0, ncol(Z), ncol(Z))
-    start <- 1
-    for (i in 1:(n.levels - start.level + 1)) {
-      k <- n.levels - i + 1
-      for (j in 1:x$dims$ngrps[i]) {
-        stop <- start + ncol(cov[[k]]) - 1
-        Vr[start:stop, start:stop] <- cov[[k]]
-        start <- stop + 1
-      }
-    }
-    Vr <- Vr * x$sigma^2
-  }
+    else {
+      clist <- list(`x$groups[[n.levels - i + 1]]` = c("contr.treatment",
+                                                       "contr.treatment"))
 
-  list(X = model.matrix(formula(x), data), G = Vr, R = R, Z = Z, V = Z %*% Vr %*% t(Z) + R)
+      M[[1]] <- model.matrix(~x$groups[[n.levels -
+                                          i + 1]] - 1, contrasts.arg = clist)
+    }
+    M[[2]] <- Zt[, i.col:(i.col + grp.dims[i] - 1), drop = FALSE]
+    i.col <- i.col + grp.dims[i]
+    Z <- cbind(Z, mgcv::tensor.prod.model.matrix(M))
+  }
+  Vr <- matrix(0, ncol(Z), ncol(Z))
+  start <- 1
+  for (i in n.levels:1) {
+    k <- n.levels - i + 1
+    for (j in 1:x$dims$ngrps[i]) {
+      stop <- start + ncol(cov[[k]]) - 1
+      Vr[start:stop, start:stop] <- cov[[k]]
+      start <- stop + 1
+    }
+  }
+  Vr <- Vr * x$sigma^2
+  V <- V + Z %*% Vr %*% t(Z)
+  contr_type <-
+    list(Z = Z, G = Vr, R = R, V = V)
 }
 
 #' @exportS3Method
@@ -280,17 +349,23 @@ eblup <- function(object, predictions, df = NULL){
   if (is.null(names(predictions))){
     names(predictions) = paste0('Linear Function ', 1:length(predictions), ':')
   }
-  options(contrasts = c('contr.sum', 'contr.poly'))
-  object = update(object)
-  # Calculation of standard errors and CI for eblups requires X, Z, G and R matrices
-  vcomp <- get_vcomp(object)
-  X <- vcomp$X
-  G <- vcomp$G
-  R <- vcomp$R
-  Z <- vcomp$Z
-  drop_empty <- colSums(Z) > 0
-  Z <- Z[ , drop_empty]
-  G <- G[drop_empty, drop_empty]
+
+  contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
+
+  sum_zero <- sapply(object$contrasts, function(x){
+    ncol(x) == 1 | all(colSums(x) == 0)
+  })
+  if (!all(sum_zero)){
+    warning(simpleWarning('Refitting model with sum-to-zero contrasts; see help("eblup_term") for details'))
+    contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
+    object <- update(object, contrasts = contr_list)
+  }
+
+  vc <- get_vcomp.lme(object)
+  G <- vc$G
+  Z <- vc$Z
+  R <- vc$R
+  X <- model.matrix(formula(object), object$data, contrasts.arg = contr_list)
 
   # From Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018)
   M1 <- t(X) %*% solve(R) %*% X
@@ -310,8 +385,10 @@ eblup <- function(object, predictions, df = NULL){
   })
 
   # Calculate predictions
-  fe_id <- seq(length(fixef(object)))
-  B <- matrix(c(fixef(object), unlist(ranef(object)))[drop_empty])
+  #fe_id <- seq(length(fixef(object)))
+  keep_real <-  which(unlist(ranef(object)) != 0)
+
+  B <- matrix(c(fixef(object), unlist(ranef(object))[keep_real]))
   preds <- sapply(L, `%*%`, B)
 
   # Rank of prediction matrices determines t- vs. F-test (with "v" den degree freedom)
@@ -364,39 +441,6 @@ eblup <- function(object, predictions, df = NULL){
     out
 }
 
-# old code
-# eblup = function(object, predictions, df = NULL){
-#   if (!inherits(object, "lme"))
-#     stop("object does not appear to be of class lme")
-#
-#   X <- model.matrix(formula(object), object$data)
-#   V <- HGSB::get_vcomp(object)
-#   G <- V$G
-#   R <- V$R
-#   Z <- V$Z
-#
-#   M1 <- t(X) %*% solve(R) %*% X
-#   M2 <- t(Z) %*% solve(R) %*% X
-#   M3 <- t(X) %*% solve(R) %*% Z
-#   M4 <- t(Z) %*% solve(R) %*% Z + solve(G)
-#   M <- cbind(rbind(M1, M2), rbind(M3, M4))
-#   C <- solve(M)
-#
-#   B <- matrix(c(fixef(object), unlist(ranef(object))))
-#   preds <- sapply(predictions, `%*%`, B)
-#   se <- sapply(predictions, function(L, C) {
-#     L <- matrix(unlist(L), nrow = 1)
-#     sqrt(L %*% C %*% t(L))
-#     }, C = C)
-#   tstat <- preds/se
-#   v <- ifelse(is.null(df), object$fixDF$terms[1], df)
-#   pval <- 2*pt(-abs(tstat), v)
-#   out <- data.frame(preds, se, v, tstat, pval)
-#   colnames(out) <- c("Prediction", "Std. Err", "DF", "t Value", "Pr > |t|")
-#
-#   out
-# }
-#
 #
 #
 #' @title Calculate the random effects estimates implied in a marginal (compound symmetric)
@@ -467,8 +511,7 @@ predict_cs_conditional <- function(object, data){
 #' @title Extract the fixed and random effects in a fitted model, ordered for use in
 #'   specifying estimable linear functions.
 #'
-#' @description This is a convenience function to aid in the specification of estimable linear
-#'   functions where the number of fixed and/or random effects in the model is large.
+#' @description ...Guidelines on specifying predictions and explaining wierd df behavior go here...
 #'
 #' @param object A model fitted with \code{\link[nlme]{lme}} or \code{\link[lme4]{lmer}}.
 #'
@@ -489,11 +532,17 @@ predict_cs_conditional <- function(object, data){
 #'
 #'@export
 eblup_terms <- function(object){
-  if (!inherits(object, 'lme') & !inherits(object, 'merMod')){
-    stop(simpleError('Object must be of class "lme" or "merMod'))
+  contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
+
+  sum_zero <- sapply(object$contrasts, function(x){
+    ncol(x) == 1 | all(colSums(x) == 0)
+  })
+  if (!all(sum_zero)){
+    warning(simpleWarning('Refitting model with sum-to-zero contrasts'))
+    contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
+    object <- update(object, contrasts = contr_list)
   }
-  terms <- c(fixef(object), unlist(ranef(object)))
-  terms <- terms[terms != 0]
-  terms <- names(terms)
-  matrix(terms, ncol = 1, dimnames = list(Index = 1:length(terms), 'Coefficient'))
+  keep_real <-  which(unlist(ranef(object)) != 0)
+  B <- c(fixef(object), unlist(ranef(object))[keep_real])
+  noquote(array(names(B), dim = c(length(B), 1), dimnames = list(seq(length(B)), 'Term:')))
 }
