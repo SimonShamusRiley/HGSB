@@ -57,7 +57,7 @@ model.matrix.reStruct <- function (object, data, contrast = NULL, ...){
 #'  matrix and Z is the random effects design matrix. These matrices are useful for calculating,
 #'  for example, EBLUPs and their standard errors.
 #'
-#' @param x A fitted model. Currently, models of the following class are supported: "lme", "merMod".
+#' @param x A fitted model. Currently, models of the following class are supported: "lme", "lmerMod".
 #' @param data 	The data frame to be used in constructing the design matrix. Uses the data stored in the
 #'   model object if not supplied. See details for more information.
 #'
@@ -213,7 +213,7 @@ get_vcomp.lme <- function(x, data = NULL){
 }
 
 #' @exportS3Method
-get_vcomp.merMod <- function(x){
+get_vcomp.lmerMod <- function(x){
  # X <- lme4::getME(x, 'X')
   G_vec <- as.vector(unlist(mapply(FUN = rep, x = unlist(lme4::VarCorr(x)), times = diff(lme4::getME(x, 'Gp')))))
   G <- diag(x = G_vec)
@@ -349,7 +349,7 @@ eblup <- function(object, predictions, df = NULL){
   if (is.null(names(predictions))){
     names(predictions) = paste0('Linear Function ', 1:length(predictions), ':')
   }
-  if ('lme' %in% class(model)){
+  if ('lme' %in% class(object)){
     contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
     sum_zero <- sapply(object$contrasts, function(x){
       ncol(x) == 1 | all(colSums(x) == 0)
@@ -360,7 +360,7 @@ eblup <- function(object, predictions, df = NULL){
       object <- update(object, contrasts = contr_list)
     }
     X <- model.matrix(formula(object), object$data, contrasts.arg = contr_list)
-  } else if ('lmerMod' %in% class(model)){
+  } else if ('lmerMod' %in% class(object)){
     options(contrasts = c('contr.sum', 'contr.poly'))
     object <- update(object)
     X <- getME(object, 'X')
