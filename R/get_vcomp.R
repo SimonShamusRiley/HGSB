@@ -349,23 +349,27 @@ eblup <- function(object, predictions, df = NULL){
   if (is.null(names(predictions))){
     names(predictions) = paste0('Linear Function ', 1:length(predictions), ':')
   }
-
-  contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
-
-  sum_zero <- sapply(object$contrasts, function(x){
-    ncol(x) == 1 | all(colSums(x) == 0)
-  })
-  if (!all(sum_zero)){
-    warning(simpleWarning('Refitting model with sum-to-zero contrasts; see help("eblup_term") for details'))
-    contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
-    object <- update(object, contrasts = contr_list)
+  if ('lme' %in% class(model)){
+    contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
+    sum_zero <- sapply(object$contrasts, function(x){
+      ncol(x) == 1 | all(colSums(x) == 0)
+    })
+    if (!all(sum_zero)){
+      warning(simpleWarning('Refitting model with sum-to-zero contrasts; see help("eblup_term") for details'))
+      contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
+      object <- update(object, contrasts = contr_list)
+    }
+    X <- model.matrix(formula(object), object$data, contrasts.arg = contr_list)
+  } else if ('lmerMod' %in% class(model)){
+    options(contrasts = c('contr.sum', 'contr.poly'))
+    object <- update(object)
+    X <- getME(object, 'X')
   }
 
   vc <- get_vcomp(object)
   G <- vc$G
   Z <- vc$Z
   R <- vc$R
-  X <- model.matrix(formula(object), object$data, contrasts.arg = contr_list)
 
   # From Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018)
   M1 <- t(X) %*% solve(R) %*% X
@@ -532,17 +536,28 @@ predict_cs_conditional <- function(object, data){
 #'
 #'@export
 eblup_terms <- function(object){
-  contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
+  if ('lme' %in% class(object)){
+    contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
 
-  sum_zero <- sapply(object$contrasts, function(x){
-    ncol(x) == 1 | all(colSums(x) == 0)
-  })
-  if (!all(sum_zero)){
-    warning(simpleWarning('Refitting model with sum-to-zero contrasts'))
-    contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
-    object <- update(object, contrasts = contr_list)
-  }
+    sum_zero <- sapply(object$contrasts, function(x){
+      ncol(x) == 1 | all(colSums(x) == 0)
+    })
+    if (!all(sum_zero)){
+      warning(simpleWarning('Refitting model with sum-to-zero contrasts'))
+      contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
+      object <- update(object, contrasts = contr_list)
+    }} else if ('lmerMod' %in% class(object)){
+      options(contrasts = c('contr.sum', 'contr.poly'))
+      object <- update(object)
+    }
   keep_real <-  which(unlist(ranef(object)) != 0)
   B <- c(fixef(object), unlist(ranef(object))[keep_real])
   noquote(array(names(B), dim = c(length(B), 1), dimnames = list(seq(length(B)), 'Term:')))
 }
+
+
+
+
+
+
+
