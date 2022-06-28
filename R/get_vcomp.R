@@ -112,17 +112,17 @@ get_vcomp.lme <- function(x, data = NULL){
     }
   }
   grps <- as.data.frame(grps)
-  grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps)], as.character)
+  grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
 
   for (n in 1:ncol(grps)){
     grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
   }
-  grps <- grps[, ncol(grps):1]
+  grps <- grps[, ncol(grps):1, drop = F]
 
   x$groups <- grps
 
   idents <- sapply(x$modelStruct$reStruct, function(x) {'pdIdent' %in% class(x)})
-  x$dims$ngrps <- sapply(x$groups[, ncol(x$groups):1], nlevels)
+  x$dims$ngrps <- sapply(x$groups[, ncol(x$groups):1, drop = F], nlevels)
   x$dims$ncol[which(idents)] <- 1
 
   for (w in which(idents)){
