@@ -214,12 +214,12 @@ get_vcomp.lme <- function(x, data = NULL){
 
 #' @exportS3Method
 get_vcomp.merMod <- function(x){
-  X <- lme4::getME(x, 'X')
+ # X <- lme4::getME(x, 'X')
   G_vec <- as.vector(unlist(mapply(FUN = rep, x = unlist(lme4::VarCorr(x)), times = diff(lme4::getME(x, 'Gp')))))
   G <- diag(x = G_vec)
   R <- diag(sigma(x)^2, nrow = nrow(x@frame))
   Z <- as.matrix(lme4::getME(x, 'Z'))
-  list(X = X, G = G, R = R, Z = Z, V = Z %*% G %*% t(Z) + R)
+  list(Z = Z, G = G, R = R,  V = Z %*% G %*% t(Z) + R)
 }
 #' @exportS3Method
 get_vcomp.gls <- function(model, data){
@@ -262,7 +262,7 @@ get_vcomp.gls <- function(model, data){
   }
 
   V <- as.vector(w) * t(as.vector(w) * V)
-  list(X = model.matrix(model, data), V = V)
+  list(V = V)
 }
 
 get_vcomp.glmmTMB <- function(x){
@@ -338,7 +338,7 @@ get_vcomp.glmmTMB <- function(x){
 eblup <- function(object, predictions, df = NULL){
   # Verify that arguments are valid
   if (!inherits(object, "lme") & !inherits(object, 'lmerMod')){
-    stop(simpleError("object must be of class lme"))
+    stop(simpleError(paste0("objects of class ", class(object), " are not supported")))
   }
   if (!all(sapply(predictions, function(x) {is.vector(x) | is.matrix(x) | is.array(x)}))) {
     stop(simpleError('predictions must be a list of vectors, matrices or arrays'))
@@ -361,7 +361,7 @@ eblup <- function(object, predictions, df = NULL){
     object <- update(object, contrasts = contr_list)
   }
 
-  vc <- get_vcomp.lme(object)
+  vc <- get_vcomp(object)
   G <- vc$G
   Z <- vc$Z
   R <- vc$R
