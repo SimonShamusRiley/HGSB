@@ -159,7 +159,8 @@ usethis::use_data(density, overwrite = T)
 
 orchard <- read.csv('raw/orchardWide.csv')
 orchard[, 1:3] <- lapply(orchard[, 1:3], factor)
-usethis::use_data(orchard)
+colnames(orchard)[2] <- 'cultivar'
+usethis::use_data(orchard, overwrite = T)
 
 clover <- read.csv('raw/cloverWide.csv')
 clover[, 1:3] <- lapply(clover[, 1:3], factor)
