@@ -8,7 +8,7 @@ matrices from a fitted model}
 get_vcomp(x, ...)
 }
 \arguments{
-\item{x}{A fitted model. Currently, models of the following class are supported: "lme", "merMod".}
+\item{x}{A fitted model. Currently, models of the following class are supported: "lme", "lmerMod".}
 
 \item{data}{The data frame to be used in constructing the design matrix. Uses the data stored in the
 model object if not supplied. See details for more information.}
