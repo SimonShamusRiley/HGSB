@@ -569,10 +569,8 @@ eblup_terms <- function(object){
     grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
   }
   grps <- grps[, ncol(grps):1, drop = F]
-
   object$groups <- grps
 
-  keep_real <-  which(unlist(ranef(object)) != 0)
   nlev <- sapply(object$groups, function(x){length(levels(x))})
   labs <- unlist(mapply(rep, x = names(object$groups), each = nlev))
   u <- paste(labs, unlist(sapply(object$groups, levels)), sep = ':')
