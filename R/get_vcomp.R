@@ -208,8 +208,7 @@ get_vcomp.lme <- function(x, data = NULL){
   }
   Vr <- Vr * x$sigma^2
   V <- V + Z %*% Vr %*% t(Z)
-  contr_type <-
-    list(Z = Z, G = Vr, R = R, V = V)
+  list(Z = Z, G = Vr, R = R, V = V)
 }
 
 #' @exportS3Method
@@ -550,9 +549,35 @@ eblup_terms <- function(object){
       options(contrasts = c('contr.sum', 'contr.poly'))
       object <- update(object)
     }
+
+  forms = formula(reStruct(object$modelStruct$reStruct))
+  nested <- names(forms)
+  nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
+  nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = '_'))
+  grps <- lapply(forms, model.frame, data = data)
+  names(grps) <- nms
+  if (any(pull <- sapply(grps, length)==0)){
+    pull <- names(grps)[pull]
+    for (c in pull){
+      grps[[c]] <- data[, c, drop = F]
+    }
+  }
+  grps <- as.data.frame(grps)
+  grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
+
+  for (n in 1:ncol(grps)){
+    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
+  }
+  grps <- grps[, ncol(grps):1, drop = F]
+
+  object$groups <- grps
+
   keep_real <-  which(unlist(ranef(object)) != 0)
-  B <- c(fixef(object), unlist(ranef(object))[keep_real])
-  noquote(array(names(B), dim = c(length(B), 1), dimnames = list(seq(length(B)), 'Term:')))
+  nlev <- sapply(object$groups, function(x){length(levels(x))})
+  labs <- unlist(mapply(rep, x = names(object$groups), each = nlev))
+  u <- paste(labs, unlist(sapply(object$groups, levels)), sep = ':')
+  B <- c(names(fixef(object)), u)
+  noquote(array(B, dim = c(length(B), 1), dimnames = list(seq(length(B)), 'Term:')))
 }
 
 
