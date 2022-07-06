@@ -555,8 +555,8 @@ eblup_terms <- function(object){
       options(contrasts = c('contr.sum', 'contr.poly'))
       object <- update(object)
     }
-
-  forms = formula(reStruct(object$modelStruct$reStruct))
+  data <- nlme::getData(object)
+  forms <- formula(reStruct(object$modelStruct$reStruct))
   nested <- names(forms)
   nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
   nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = '_'))
