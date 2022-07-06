@@ -115,9 +115,10 @@ get_vcomp.lme <- function(x, data = NULL){
   grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
 
   for (n in 1:ncol(grps)){
-    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
+    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])),
+                        levels = unique(paste0(grps[, n], as.character(data[, nested[n]]))))
   }
-  grps <- grps[, ncol(grps):1, drop = F]
+  grps <- grps[, 1:ncol(grps), drop = F]
 
   x$groups <- grps
 
@@ -180,7 +181,7 @@ get_vcomp.lme <- function(x, data = NULL){
   i.col <- 1
   n.levels <- length(x$groups)
   Z <- matrix(0, n, 0)
-  for (i in n.levels:1) {
+  for (i in 1:n.levels) {
     if (length(levels(x$groups[[n.levels - i + 1]])) ==
         1) {
       M[[1]] <- matrix(rep(1, nrow(x$groups)))
@@ -194,12 +195,12 @@ get_vcomp.lme <- function(x, data = NULL){
     }
     M[[2]] <- Zt[, i.col:(i.col + grp.dims[i] - 1), drop = FALSE]
     i.col <- i.col + grp.dims[i]
-    Z <- cbind(Z, mgcv::tensor.prod.model.matrix(M))
+    Z <- cbind(Z,  mgcv::tensor.prod.model.matrix(M))
   }
   Vr <- matrix(0, ncol(Z), ncol(Z))
   start <- 1
-  for (i in n.levels:1) {
-    k <- n.levels - i + 1
+  for (i in 1:n.levels) {
+    k <- i #n.levels - i + 1
     for (j in 1:x$dims$ngrps[i]) {
       stop <- start + ncol(cov[[k]]) - 1
       Vr[start:stop, start:stop] <- cov[[k]]
@@ -559,7 +560,7 @@ eblup_terms <- function(object){
   forms <- formula(reStruct(object$modelStruct$reStruct))
   nested <- names(forms)
   nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
-  nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = '_'))
+  nms <- mapply(paste, names(forms), nms, MoreArgs = list(sep = ""))
   grps <- lapply(forms, model.frame, data = data)
   names(grps) <- nms
   if (any(pull <- sapply(grps, length)==0)){
@@ -572,9 +573,16 @@ eblup_terms <- function(object){
   grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
 
   for (n in 1:ncol(grps)){
-    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])))
+    redundant <- mapply(regexpr, pattern = grps[, nested[n]], text = grps[, n])
+    if (colnames(grps)[n] == nested[n] | all(redundant > 0)){
+      grps[, n] <- factor(grps[, n], levels = unique(grps[, n]))
+    } else {
+      grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])),
+                          levels = unique(paste0(grps[, n], as.character(data[, nested[n]]))))
+    }
   }
   grps <- grps[, ncol(grps):1, drop = F]
+  u <- unlist(sapply(grps, levels), use.names = F)
   object$groups <- grps
 
   nlev <- sapply(object$groups, function(x){length(levels(x))})
