@@ -22,14 +22,8 @@ Cramer_v(
 \arguments{
 \item{x}{}
 }
-\value{
-
-}
 \description{
-
-}
-\details{
-
+Cramer's V Test
 }
 \references{
 Mangiafico, S. (2021). "rcompanion: Functions to Support

@@ -27,11 +27,13 @@ the F-statistic and p-value of the test.
 \details{
 The predictions to be calculated must be supplied in the form of a named list,
 with each list item consisting of a contrast specification. The contrast coefficients
-must be ordered following the list of terms generated via \code{fit$coefficients}.
-Note that this implies that how a given prediction is specified with differ depending
-on the settings of \code{options()$contrasts}. See \code{\link[stats]{contrasts}} for
-details. If a matrix is supplied, each line is taken to be a seperate contrast
-specification and an F-test is conducted.
+must be ordered as per the results generated from a call to \code{eblup_terms()},
+which accounts for the fact that the model will be refitted (if necessary) using
+sum-to-zero contrasts and that the Z matrix, and thus the projection matrix, are
+constructed such that the ordering of terms may not agree with that generated from a
+call to fixef and/or ranef. Note that this implies that how a given prediction is
+specified with differ depending If a matrix is supplied, each row is taken to be a
+seperate contrast specification and an F-test is conducted.
 
 Note that Stroup et al. (2018) advise that prediction variance estimates (and thus
 the "standard error" in the function's output) tend to be downwardly biased,
@@ -61,7 +63,7 @@ pred.list <- list('sire 1 BLUP "broad"' = c(1,
 fit <- lme(adg ~ 1, breeding, ~ 1|sire/dam)
 
 # Predictions are identical, but standard errors lack Kenward-Roger adjustment
-# and degrees of freedom differ must be set manually
+# and degrees of freedom differ and must be set manually
 eblup(fit, pred.list, df = 4)
 
 

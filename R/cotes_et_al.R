@@ -30,10 +30,9 @@
 #'@references Kang, M. S., & Magari, R. (1996). New development in selecting for
 #'  phenotypic stability in crop breeding. In M. S. Kang & H. G. Gauch (Eds.), Genotype by
 #'  Environment Interaction (First Edition). CRC-Press.
-
 #'
 #'@export
-geys = function(data, response = 'yield', genoytpe = 'geno',
+geys = function(data, response = 'yield', genotype = 'geno',
                 environment = 'env', block = NULL, alpha = 0.1, ...) {
 
   fe = as.formula(paste0(response, '~', genotype))

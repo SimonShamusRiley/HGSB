@@ -14,7 +14,11 @@ eblup_terms(object)
 A column vector of the names of fixed- and random-effects coefficients in \code{object}.
 }
 \description{
-...Guidelines on specifying predictions and explaining wierd df behavior go here...
+This function provides the names of the terms, in proper order, for
+specifying contrast statements in calls to eblup(). Note that to correctly calculate
+the standard errors of eblups, the ordering of the terms must agree with that of the
+projection matrix, which may differ from the ordering of terms provided by calls to
+fixef() and/or ranef().
 }
 \examples{
 library(HGSB)

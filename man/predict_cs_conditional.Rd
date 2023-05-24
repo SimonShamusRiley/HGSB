@@ -23,9 +23,6 @@ random effects and a compound symmetric correlation structure, its possible to c
 random effects estimates implied by the latter:
 \deqn{\mathbf{G}\mathbf{Z}'\mathbf{V}^{-1}(Y - \mathbf{X}\beta)}{GZ'V^ (-1) (Y - X \beta)}
 }
-\details{
-
-}
 \references{
 Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018).
 "SAS for Mixed Models: Introduction and Basic Applications". Cary, NC: SAS

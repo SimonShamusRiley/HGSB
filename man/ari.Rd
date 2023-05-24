@@ -12,6 +12,3 @@ ari(x, y)
 \description{
 This function is taken verbatim from the \code{mclust} package.
 }
-\references{
-
-}

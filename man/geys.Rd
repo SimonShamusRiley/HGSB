@@ -7,7 +7,7 @@
 geys(
   data,
   response = "yield",
-  genoytpe = "geno",
+  genotype = "geno",
   environment = "env",
   block = NULL,
   alpha = 0.1,
@@ -22,6 +22,9 @@ parameters response, environment, genotype and, optionally, block.}
 The default is "yield". Also note that in selecting genotypes, it is assumed that
 higher values of the response are better.}
 
+\item{genotype}{character. The name of column containing the genotype labels. The
+default is "geno".}
+
 \item{environment}{character. The name of the column containing the environemnt labels.
 The default is "env".}
 
@@ -34,9 +37,6 @@ rankings (see Cotes et al. (2002) for details). Defaults to 0.10.}
 
 \item{...}{Other arguments passed to \code{nlme::lme()} during model fitting for the
 estimation of Shukla's variances and SED's.}
-
-\item{genotype}{character. The name of column containing the genotype labels. The
-default is "geno".}
 }
 \value{
 a data frame containing the yield stability rankings, along with some
