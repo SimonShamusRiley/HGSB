@@ -1,6 +1,6 @@
-#'@title Calculate the Yield Stability Index of Coates et al. (2002)
+#'@title Calculate the Yield Stability Index of Cotes et al. (2002)
 #'
-#'@description This function is ported from the SAS macro given in Coates et al. (2002),
+#'@description This function is ported from the SAS macro given in Cotes et al. (2002),
 #'  which those authors describe as being derived from the approach described by Kang
 #'  (1996).
 #'
@@ -17,13 +17,20 @@
 #'  is NULL, corresponding to no blocks (i.e a completely randomized design at all
 #'  locations).
 #'@param alpha The type I error rate to use for making the LSD adjustment to the yield
-#'  rankings (see Coates et al. (2002) for details). Defaults to 0.10.
+#'  rankings (see Cotes et al. (2002) for details). Defaults to 0.10.
 #'@param ... Other arguments passed to `nlme::lme()` during model fitting for the
 #'  estimation of Shukla's variances and SED's.
 #'
 #'@return a data frame containing the yield stability rankings, along with some
 #'  intermediate values used in their calculation. \code{object}.
 #'
+#'@references Cotes, J. M., Ñustez, C. E., Martinez, R., & Estrada, N. (2002). Analyzing
+#'  genotype by environment interaction in potato using yield-stability index. American
+#'  Journal of Potato Research, 79(3), 211–218. https://doi.org/10.1007/BF02871937
+#'@references Kang, M. S., & Magari, R. (1996). New development in selecting for
+#'  phenotypic stability in crop breeding. In M. S. Kang & H. G. Gauch (Eds.), Genotype by
+#'  Environment Interaction (First Edition). CRC-Press.
+
 #'
 #'@export
 geys = function(data, response = 'yield', genoytpe = 'geno',

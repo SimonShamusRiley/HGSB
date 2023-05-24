@@ -461,8 +461,6 @@ eblup <- function(object, predictions, df = NULL){
 #'   corCompSymm correlation structure.
 #' @param data 	The data frame used in fitting \code{object}. Required if \code{object} is
 #'   of class \code{gls}
-#' @details
-#'
 #' @return A vector of random effects estimates.
 #'
 #' @references Stroup, W., Milliken, G., Claasen, E., Wolfinger, R. (2018).

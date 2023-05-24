@@ -176,8 +176,6 @@ collinearity_diagnostic <- function(object, digits = 4){
 #'
 #' @param x,y Vector of classifications
 #'
-#' @references
-#'
 #' @export
 ari <- function(x, y){
     x <- as.vector(x)
