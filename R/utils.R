@@ -144,18 +144,28 @@ gcf <- function(x){
 #' @details Columns are converted to numeric where as.numeric does not produce any
 #'   additional NA values.
 #' @export
-as.data.frame.by <- function(x, ...){
-  row_suffix <- names(attr(x, "dimnames"))
-  row_suffix <- gsub(pattern = '$', replacement = '_', row_suffix, fixed = T)
-  row_names <- paste0(row_suffix, '_',
-                      as.character(attr(x, "dimnames")[[1]]))
-  out <- lapply(x, FUN = unlist)
-  out <- data.frame(t(as.data.frame(out)),
-                    row.names = row_names, ...)
-  try_num <- sapply(suppressWarnings(lapply(out[, 1:ncol(out)], as.numeric)), function(x) {sum(is.na(x))})
-  already_na <- sapply(out[, 1:ncol(out)], function(x){sum(is.na(x))})
-  num <- which(try_num == already_na)
-  out[, num] <- lapply(out[, num], as.numeric)
+as.data.frame.by <- function(x, row_suffix = F, ...){
+  if (row_suffix == FALSE) {
+    row_names = as.character(attr(x, "dimnames")[[1]])
+  } else if (row_suffix == TRUE) {
+    row_suffix <- names(attr(x, "dimnames"))
+    row_suffix <- gsub(pattern = '$', replacement = '_', row_suffix, fixed = T)
+    row_names <- paste(row_suffix, as.character(attr(x, "dimnames")[[1]]), sep = ':')
+  } else {
+    row_names <- paste(row_suffix, as.character(attr(x, "dimnames")[[1]]), sep = ':')
+  }
+  out <- sapply(x, FUN = unlist)
+  if (is.null(dim(out))){
+    out <- as.data.frame(matrix(out, dimnames = list(row_names, as.character(attr(x, 'call'))[4])))
+  } else {
+    out <- as.matrix(out)
+    out <- data.frame(t(as.data.frame(out)),
+                      row.names = row_names)
+    try_num <- sapply(suppressWarnings(lapply(out[, 1:ncol(out)], as.numeric)), function(x) {sum(is.na(x))})
+    already_na <- sapply(out[, 1:ncol(out)], function(x){sum(is.na(x))})
+    num <- which(try_num == already_na)
+    out[, num] <- lapply(out[, num], as.numeric)
+  }
   return(out)
 }
 
