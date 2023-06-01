@@ -147,7 +147,7 @@ soy2000[, 1:3] <- lapply(soy2000[, 1:3], factor)
 colnames(soy2000)[1] <- 'cultivar'
 usethis::use_data(soy2000, overwrite = T)
 
-#### Chapter 11 ####
+#### Chapter 11 #####
 trefoil <- read.csv('raw/trefoil.csv')
 trefoil[, 1:3] <- lapply(trefoil[, 1:3], factor)
 usethis::use_data(trefoil)
