@@ -4,7 +4,7 @@
 \alias{as.data.frame.by}
 \title{Coerce objects of class "by" to a data.frame}
 \usage{
-\method{as.data.frame}{by}(x, ...)
+\method{as.data.frame}{by}(x, row_suffix = F, ...)
 }
 \arguments{
 \item{x}{An object of class "by".}

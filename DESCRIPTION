@@ -52,7 +52,6 @@ Suggests:
     segmented,
     tidyr,
     TMB,
-    vcd,
     vegan,
 VignetteBuilder:
     knitr
