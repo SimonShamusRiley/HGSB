@@ -28,7 +28,7 @@ install.packages("devtools")
 For a **complete installation**, which includes all of the packages used in the text's example analyses, run the following code (note that this may take ten minutes or more, depending on how many of the dependencies are already installed on your machine):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
+devtools::install_github(repo = "IFAS-SCU/HGSB-R", dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
 ```
 
 If asked whether "you want to install from sources the packages which need compilation?", 
@@ -40,7 +40,7 @@ It is recommended to update all of them. Which would you like to update?", type 
 For a **minimal installation**, which omits many packages used in the example analysis (and thus which will require installation later), simply omit the `dependencies = TRUE` argument (*do not* set dependencies to `FALSE`):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB", INSTALL_opts = c("--no-multiarch"))
+devtools::install_github(repo = "IFAS-SCU/HGSB-R", INSTALL_opts = c("--no-multiarch"))
 ```
 
 ## Ubuntu
@@ -70,13 +70,13 @@ install.packages('devtools')
 For a **complete installation**, which includes all of the packages used in the text's example analyses, run the following code (note that this may take a considerable amount of time, depending on how many of the dependencies are already installed on your machine):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB", dependencies = TRUE)
+devtools::install_github(repo = "IFAS-SCU/HGSB-R", dependencies = TRUE)
 ```
 
 For a **minimal installation**, which omits many packages used in the example analysis (and thus which will require installation later), simply omit the `dependencies = TRUE` argument (*do not* set dependencies to `FALSE`):
 
 ```
-devtools::install_github(repo = "SimonShamusRiley/HGSB")
+devtools::install_github(repo = "IFAS-SCU/HGSB-R")
 ```
 
 ## Other Linux Distributions
@@ -90,7 +90,7 @@ Some guidance for those using Debian, Fedora, etc. is provided [here](https://cl
 3) Like `devtools`, many of the other packages used in the text's example analyses will have additional dependencies. Thus, you are advised to start with the **minimal installation** of the `HGSB` package by running the following in R, and then installing (and troubleshooting) other required packages individually on an as-needed basis:
 
 ```
-devtools::install_github('SimonShamusRiley/HGSB')
+devtools::install_github('IFAS-SCU/HGSB-R')
 ```
 
 
