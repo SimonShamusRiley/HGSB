@@ -183,7 +183,7 @@ as.data.frame.infl <- function(x, ...){
 
 #' @importFrom nlme getData
 
-#' @exportS3Method
+#' @export
 getData.glmmTMB <- function(object){
   object$frame
 }
