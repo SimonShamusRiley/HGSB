@@ -36,6 +36,7 @@ Suggests:
     glmmTMB,
     knitr,
     lattice,
+    lmerTest,
     MASS,
     MCMCglmm,
     metafor,
