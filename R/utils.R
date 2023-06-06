@@ -237,5 +237,27 @@ formula_comb <- function(form, n.max, marginality = T){
   return(forms)
 }
 
+#' @title Test for overdispersion in a gitted GL(M)M
+#' @param model An fitted glmmTMB, glmer or glm model
+#' @param df Numeric. The degrees of freedom for testing. Defualts to NULL, in which case
+#' df are extracted from the fitted model using df.residual()
+#' @param digits Integer. The number of digits to round the statistics when outputting the
+#' the results
+#' @export
+overdisp <- function(model, df = NULL, digits = 2) {
+  rdf <- ifelse(is.null(df), df.residual(model), df)
+  rp <- residuals(model, type="pearson")
+  chi2 <- sum(rp^2)
+  prat <- chi2/rdf
+  pval <- pchisq(chi2, df=rdf, lower.tail=FALSE)
 
+  cat('\n')
+  cat("\t Pearson's \U1d6d8\u00B2/DF Test for Overdispersion \n")
+  cat(paste("Model: ", deparse(substitute(model)), "\n"))
+  cat('\n')
+  cat(paste('\U1d6d8 \u00B2 =\t\t', round(chi2, digits), '\nRes. DF =\t', rdf,
+            '\n\U1d6d8 \u00B2/DF =\t', round(prat, digits),
+            '\np-value =\t', round(pval, 4)))
+
+}
 
