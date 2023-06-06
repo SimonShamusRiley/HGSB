@@ -243,6 +243,10 @@ formula_comb <- function(form, n.max, marginality = T){
 #' df are extracted from the fitted model using df.residual()
 #' @param digits Integer. The number of digits to round the statistics when outputting the
 #' the results
+#'
+#' @details The code for this function is adapted from some originally posted online
+#' by Ben Bolker.
+#'
 #' @export
 overdisp <- function(model, df = NULL, digits = 2) {
   rdf <- ifelse(is.null(df), df.residual(model), df)
