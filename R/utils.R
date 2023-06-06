@@ -261,7 +261,6 @@ overdisp <- function(model, df = NULL, digits = 2) {
   cat('\n')
   cat(paste('\U1d6d8 \u00B2 =\t\t', round(chi2, digits), '\nRes. DF =\t', rdf,
             '\n\U1d6d8 \u00B2/DF =\t', round(prat, digits),
-            '\np-value =\t', round(pval, 4)))
-
+            '\np-value =\t', ifelse(pval < 0.0001, '< 0.0001', round(pval, 4))))
 }
 
