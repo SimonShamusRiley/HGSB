@@ -46,6 +46,7 @@ Suggests:
     MuMIn,
     nortest, 
     nnet,
+    ordinal,
     pls,
     psych,
     rgl,
