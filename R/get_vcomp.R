@@ -88,21 +88,22 @@ get_vcomp = function(x, ...){
 
 #' @exportS3Method
 get_vcomp.lme <- function(x, data = NULL){
-  if (!inherits(x, "lme"))
+  if (!inherits(x, "lme")){
     stop("object does not appear to be of class lme")
+  }
   if (is.null(data)) {
     na.act <- na.action(x)
-    data <- if (is.null(na.act))
+    data <- if (is.null(na.act)){
       x$data
-    else x$data[-na.act, ]
+    } else { x$data[-na.act, ]}
   }
 
   # x$groups, x$dims$ngrp and x$dims$ncol are all misspecified when crossed random
   # effects are present; this corrects those
-  forms = formula(reStruct(x$modelStruct$reStruct))
+  forms = (formula(reStruct(x$modelStruct$reStruct)))
   nested <- names(forms)
   nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
-  nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = '_'))
+  nms <- mapply(paste0, names(forms), nms, MoreArgs = list(collapse = ''))
   grps <- lapply(forms, model.frame, data = data)
   names(grps) <- nms
   if (any(pull <- sapply(grps, length)==0)){
@@ -111,12 +112,13 @@ get_vcomp.lme <- function(x, data = NULL){
       grps[[c]] <- data[, c, drop = F]
     }
   }
+
   grps <- as.data.frame(grps)
   grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
 
   for (n in 1:ncol(grps)){
-    grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])),
-                        levels = unique(paste0(grps[, n], as.character(data[, nested[n]]))))
+    grps[, n] <- factor(paste0(as.character(data[, nested[n]]), grps[, n]),
+                        levels = unique(paste0(as.character(data[, nested[n]]), grps[, n])))
   }
   grps <- grps[, 1:ncol(grps), drop = F]
 
@@ -133,9 +135,9 @@ get_vcomp.lme <- function(x, data = NULL){
 
   grps <- nlme::getGroups(x)
   n <- length(grps)
-  if (is.null(x$modelStruct$varStruct))
+  if (is.null(x$modelStruct$varStruct)){
     w <- rep(x$sigma, n)
-  else {
+  } else {
     w <- 1/nlme::varWeights(x$modelStruct$varStruct)
     group.name <- names(x$groups)
     order.txt <- paste("ind<-order(data[[\"", group.name[1],
@@ -149,9 +151,9 @@ get_vcomp.lme <- function(x, data = NULL){
     w[ind] <- w
     w <- w * x$sigma
   }
-  if (is.null(x$modelStruct$corStruct))
+  if (is.null(x$modelStruct$corStruct)) {
     V <- diag(n)
-  else {
+  } else {
     c.m <- nlme::corMatrix(x$modelStruct$corStruct)
     if (!is.list(c.m))
       V <- c.m
@@ -180,23 +182,33 @@ get_vcomp.lme <- function(x, data = NULL){
   cov <- as.matrix(x$modelStruct$reStruct)
   i.col <- 1
   n.levels <- length(x$groups)
-  Z <- matrix(0, n, 0)
-  for (i in 1:n.levels) {
-    if (length(levels(x$groups[[n.levels - i + 1]])) ==
-        1) {
-      M[[1]] <- matrix(rep(1, nrow(x$groups)))
-    }
-    else {
-      clist <- list(`x$groups[[n.levels - i + 1]]` = c("contr.treatment",
-                                                       "contr.treatment"))
 
-      M[[1]] <- model.matrix(~x$groups[[n.levels -
-                                          i + 1]] - 1, contrasts.arg = clist)
-    }
-    M[[2]] <- Zt[, i.col:(i.col + grp.dims[i] - 1), drop = FALSE]
-    i.col <- i.col + grp.dims[i]
-    Z <- cbind(Z,  mgcv::tensor.prod.model.matrix(M))
+  # Z <- matrix(0, n, 0)
+  #
+  # for (i in 1:n.levels) {
+  #   if (length(levels(x$groups[[n.levels - i + 1]])) ==
+  #       1) {
+  #     M[[1]] <- matrix(rep(1, nrow(x$groups)))
+  #   }
+  #   else {
+  #     clist <- list(`x$groups[[n.levels - i + 1]]` = c("contr.treatment",
+  #                                                      "contr.treatment"))
+  #
+  #     M[[1]] <- model.matrix(~x$groups[[n.levels -
+  #                                         i + 1]] - 1, contrasts.arg = clist)
+  #   }
+  #   M[[2]] <- Zt[, i.col:(i.col + grp.dims[i] - 1), drop = FALSE]
+  #   i.col <- i.col + grp.dims[i]
+  #   Z <- cbind(Z,  mgcv::tensor.prod.model.matrix(M))
+  # }
+  #
+  if (ncol(x$groups == 1)){
+    Z <- model.matrix(~0+., data = x$groups)
+  } else {
+    Zlist <- apply(x$groups, 2, function(x){model.matrix(~0+., data = as.data.frame(x))})
+    Z <- do.call(cbind, Zlist)
   }
+
   Vr <- matrix(0, ncol(Z), ncol(Z))
   start <- 1
   for (i in 1:n.levels) {
@@ -209,6 +221,7 @@ get_vcomp.lme <- function(x, data = NULL){
   }
   Vr <- Vr * x$sigma^2
   V <- V + Z %*% Vr %*% t(Z)
+
   list(Z = Z, G = Vr, R = R, V = V)
 }
 
