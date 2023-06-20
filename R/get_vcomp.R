@@ -202,7 +202,7 @@ get_vcomp.lme <- function(x, data = NULL){
   #   Z <- cbind(Z,  mgcv::tensor.prod.model.matrix(M))
   # }
   #
-  if (ncol(x$groups == 1)){
+  if (ncol(x$groups) == 1){
     Z <- model.matrix(~0+., data = x$groups)
   } else {
     Zlist <- apply(x$groups, 2, function(x){model.matrix(~0+., data = as.data.frame(x))})
