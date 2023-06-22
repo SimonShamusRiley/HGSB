@@ -226,7 +226,7 @@ get_vcomp.lme <- function(x, data = NULL){
 }
 
 #' @exportS3Method
-get_vcomp.lmerMod <- function(x){
+get_vcomp.merMod <- function(x){
   if ('glmer' %in% class(x)){
     stop(simpleError('get_vcomp does not support glmer models'))
   }
@@ -600,7 +600,7 @@ eblup_terms.lme <- function(object){
 }
 
 #' @exportS3Method
-eblup_terms.lmerMod = function(object){
+eblup_terms.merMod = function(object){
   reset <- options()$contrasts
   options(contrasts = c('contr.sum.keepnames', 'contr.poly'))
   object <- update(object)
