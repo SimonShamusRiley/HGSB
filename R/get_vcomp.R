@@ -226,7 +226,10 @@ get_vcomp.lme <- function(x, data = NULL){
 }
 
 #' @exportS3Method
-get_vcomp.lmerMod <- function(x){
+get_vcomp.merMod <- function(x){
+  if (!'lmerMod' %in% class(x)){
+    stop(simpleError('get_vcomp does not support glmer models'))
+  }
  # X <- lme4::getME(x, 'X')
   G_vec <- as.vector(unlist(mapply(FUN = rep, x = unlist(lme4::VarCorr(x)), times = diff(lme4::getME(x, 'Gp')))))
   G <- diag(x = G_vec)
@@ -552,58 +555,66 @@ predict_cs_conditional <- function(object, data){
 #'eblup_terms(fit)
 #'
 #'@export
-eblup_terms <- function(object){
-  if ('lme' %in% class(object)){
-    contr_list <- attr(model.matrix(formula(object), object$data), 'contrasts')
+eblup_terms = function(object){
+  UseMethod('eblup_terms', object)
+}
+#'
+#'@exportS3Method
+eblup_terms.lme <- function(object){
+    reset <- options()$contrasts
+    options(contrasts = c('contr.sum.keepnames', 'contr.poly'))
+    object <- update(object)
+    options(contrasts = reset)
 
-    sum_zero <- sapply(object$contrasts, function(x){
-      ncol(x) == 1 | all(colSums(x) == 0)
-    })
-    if (!all(sum_zero)){
-      warning(simpleWarning('Refitting model with sum-to-zero contrasts'))
-      contr_list <- lapply(contr_list, `[<-`, 'contr.sum')
-      object <- update(object, contrasts = contr_list)
-    }} else if ('lmerMod' %in% class(object)){
-      options(contrasts = c('contr.sum', 'contr.poly'))
-      object <- update(object)
-    }
-  data <- nlme::getData(object)
-  forms <- formula(reStruct(object$modelStruct$reStruct))
-  nested <- names(forms)
-  nms <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
-  nms <- mapply(paste, names(forms), nms, MoreArgs = list(sep = ""))
-  grps <- lapply(forms, model.frame, data = data)
-  names(grps) <- nms
-  if (any(pull <- sapply(grps, length)==0)){
-    pull <- names(grps)[pull]
-    for (c in pull){
-      grps[[c]] <- data[, c, drop = F]
-    }
-  }
-  grps <- as.data.frame(grps)
-  grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
-
-  for (n in 1:ncol(grps)){
-    redundant <- mapply(regexpr, pattern = grps[, nested[n]], text = grps[, n])
-    if (colnames(grps)[n] == nested[n] | all(redundant > 0)){
-      grps[, n] <- factor(grps[, n], levels = unique(grps[, n]))
-    } else {
-      grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])),
-                          levels = unique(paste0(grps[, n], as.character(data[, nested[n]]))))
-    }
-  }
-  grps <- grps[, ncol(grps):1, drop = F]
-  u <- unlist(sapply(grps, levels), use.names = F)
-  object$groups <- grps
-
-  nlev <- sapply(object$groups, function(x){length(levels(x))})
-  labs <- unlist(mapply(rep, x = names(object$groups), each = nlev))
-  u <- paste(labs, unlist(sapply(object$groups, levels)), sep = ':')
-  B <- c(names(fixef(object)), u)
-  noquote(array(B, dim = c(length(B), 1), dimnames = list(seq(length(B)), 'Term:')))
+  #
+  # data   <- nlme::getData(object)
+  # forms  <- formula(reStruct(object$modelStruct$reStruct))
+  # nested <- names(forms)
+  # nms  <- gsub(x = as.character(forms), pattern = "[^[:alpha:]]", replacement = '')
+  # nms  <- mapply(paste, names(forms), nms, MoreArgs = list(sep = ""))
+  # grps <- lapply(forms, model.frame, data = data)
+  # names(grps) <- nms
+  # if (any(pull <- sapply(grps, length)==0)){
+  #   pull <- names(grps)[pull]
+  #   for (c in pull){
+  #     grps[[c]] <- data[, c, drop = F]
+  #   }
+  # }
+  # grps <- as.data.frame(grps)
+  # grps[, 1:ncol(grps)] <- lapply(grps[, 1:ncol(grps), drop = F], as.character)
+  #
+  # for (n in 1:ncol(grps)){
+  #   redundant <- mapply(regexpr, pattern = grps[, nested[n]], text = grps[, n])
+  #   if (colnames(grps)[n] == nested[n] | all(redundant > 0)){
+  #     grps[, n] <- factor(grps[, n], levels = unique(grps[, n]))
+  #   } else {
+  #     grps[, n] <- factor(paste0(grps[, n], as.character(data[, nested[n]])),
+  #                         levels = unique(paste0(grps[, n], as.character(data[, nested[n]]))))
+  #   }
+  # }
+  # grps <- grps[, ncol(grps):1, drop = F]
+  # u <- unlist(sapply(grps, levels), use.names = F)
+  # object$groups <- grps
+  #
+  # nlev <- sapply(object$groups, function(x){length(levels(x))})
+  # labs <- unlist(mapply(rep, x = names(object$groups), each = nlev))
+  # u <- paste(labs, unlist(sapply(object$groups, levels)), sep = ':')
+  # B <- c(names(fixef(object)), u)
+  terms <-   c(names(fixef(object)), names(unlist(ranef(object))))
+  noquote(array(terms, dim = c(length(terms), 1), dimnames = list(seq(length(terms)), 'Term:')))
 }
 
+#' @exportS3Method
+eblup_terms.merMod = function(object){
+  reset <- options()$contrasts
+  options(contrasts = c('contr.sum.keepnames', 'contr.poly'))
+  object <- update(object)
+  options(contrasts = reset)
 
+  modcomps <- getME(object, c('X', 'Z'))
+  terms <- unlist(sapply(modcomps, \(x){colnames(unlist(x))}), use.names = F)
+  noquote(array(terms, dim = c(length(terms), 1), dimnames = list(seq(length(terms)), 'Term:')))
+}
 
 
 
