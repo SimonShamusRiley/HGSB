@@ -264,3 +264,13 @@ overdisp <- function(model, df = NULL, digits = 2) {
             '\np-value =\t', ifelse(pval < 0.0001, '< 0.0001', round(pval, 4))))
 }
 
+#' @export
+contr.sum.keepnames <- function(...) {
+  conS <- contr.sum(...)
+  colnames(conS) = rownames(conS)[-length(rownames(conS))]
+  conS
+}
+
+
+
+
