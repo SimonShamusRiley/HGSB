@@ -1,13 +1,17 @@
 Package: HGSB
 Title: "A Hitchiker's Guide to Statistics in Biology" Companion Package
-Version: 0.1.0-20220628
+Version: 1.0.0
 Authors@R: 
     person(given = "Simon",
            family = "Riley",
            role = c("aut", "cre"),
            email = "ssriley@protonmail.com",
-           comment = c(ORCID = "0000-0002-4833-2026"))
-Description: This is the companion package for "A Hitchiker's Guide to Statistics in Biology" (2022) by Stephen R. Bowley, Edzard van Santen, Simon S. Riley, and Ruth Hummel
+           comment = c(ORCID = "0000-0002-4833-2026")),
+    person(given = "James",
+           family = "Colee",
+           role = c("ctb"),
+           email = "colee@ufl.edu")
+Description: A Hitchiker's Guide to Statistics in Biology
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true

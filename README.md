@@ -1,5 +1,5 @@
 # HGSB: The Companion Package to *A Hitchhiker's Guide to Statistics in Biology*
-### By Stephen R. Bowley, Edzard van Santen, Simon Riley & Ruth Hummel
+### By Stephen R. Bowley, Edzard van Santen, Simon Riley, Ruth Hummel and Di Michelson
 
 To be published later this year by Wiley and the ASA-CSA-SSSA. Stay tuned for updates!
 
@@ -34,6 +34,8 @@ devtools::install_github(repo = "IFAS-SCU/HGSB-R", dependencies = TRUE, INSTALL_
 If asked whether "you want to install from sources the packages which need compilation?", 
 select "No" [^1]. If informed that "These packages have more recent versions available. 
 It is recommended to update all of them. Which would you like to update?", type "1" and press enter to update all packages.
+
+Please also note that one of the packages - `{glmmTMB}` - has some known issues with dependencies, which may result in warnings or errors. If you encounter such issues, please refer to the section on "complications" found [here](https://glmmtmb.github.io/glmmTMB/).
 
 [^1]: Needing compilation means that the source contains C and/or fortran code. If you have compilers such as [RTools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, you are free to select "Yes".
 
@@ -72,6 +74,8 @@ For a **complete installation**, which includes all of the packages used in the 
 ```
 devtools::install_github(repo = "IFAS-SCU/HGSB-R", dependencies = TRUE)
 ```
+
+Note that one of the packages - `{glmmTMB}` - has some known issues with dependencies, which may result in warnings or errors. If you encounter such issues, please refer to the section on "complications" found [here](https://glmmtmb.github.io/glmmTMB/).
 
 For a **minimal installation**, which omits many packages used in the example analysis (and thus which will require installation later), simply omit the `dependencies = TRUE` argument (*do not* set dependencies to `FALSE`):
 
