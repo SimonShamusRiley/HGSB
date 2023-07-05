@@ -25,6 +25,7 @@ Imports:
 Depends: 
     R (>= 4.0.0)
 Suggests: 
+    AICcmodavg,
     ade4,
     ADGofTest,
     agricolae,
@@ -51,6 +52,7 @@ Suggests:
     psych,
     rgl,
     rmarkdown,
+    rsm,
     scatterplot3d,
     segmented,
     tidyr,
