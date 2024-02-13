@@ -2,15 +2,16 @@ Package: HGSB
 Title: "A Hitchiker's Guide to Statistics in Biology" Companion Package
 Version: 1.0.0
 Authors@R: 
-    person(given = "Simon",
+    c(person(given = "Simon",
            family = "Riley",
-           role = c("aut", "cre"),
+           role = c("aut", "cre", "mtn"),
            email = "ssriley@protonmail.com",
            comment = c(ORCID = "0000-0002-4833-2026")),
     person(given = "James",
            family = "Colee",
            role = c("ctb"),
-           email = "colee@ufl.edu")
+           email = "colee@ufl.edu"))
+Maintainer: Simon Riley <simon.riley@ufl.edu>
 Description: A Hitchiker's Guide to Statistics in Biology
 License: CC BY 4.0
 Encoding: UTF-8
